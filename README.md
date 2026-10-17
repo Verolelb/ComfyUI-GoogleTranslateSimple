@@ -3,7 +3,8 @@
 Minimal [ComfyUI](https://github.com/comfyanonymous/ComfyUI) custom nodes that do
 **only one thing**: translate text with Google Translate.
 
-No JavaScript, no server routes, no frontend hooks, no extra dependencies.
+No heavy frontend code, no dependencies to install, no interference with the
+rest of ComfyUI.
 
 ---
 
@@ -15,8 +16,8 @@ hooks the `onExecuted` handler of image preview nodes and loads every image a
 second time just to read its dimensions — which slows down (and sometimes
 breaks) the way images appear on Preview/Save nodes.
 
-This pack deliberately contains **zero JavaScript**, so it cannot interfere with
-the ComfyUI UI. It ships one small Python module.
+This pack ships only one small frontend file, and it only adds a button to its
+own two nodes. Nothing else is patched.
 
 ## Nodes
 
@@ -32,49 +33,73 @@ Typical use: write your prompt in your own language, translate it to English
 (or any other language the model understands better), then feed the result into
 a `CLIP Text Encode` node — or use the combined *CLIP Text Encode* node directly.
 
+## The "Manual Translate" button
+
+Each node has a **Manual Translate** button at the bottom:
+
+1. Type your text in the `text` field.
+2. Pick the languages.
+3. Click **Manual Translate**.
+
+The translation is written straight back into the `text` field, so you can read
+it and edit it before running the workflow. A toast shows which engine answered.
+
+The node still translates automatically on *Queue Prompt*; the button is there
+to translate up-front, in place.
+
 ## Installation
-
-### Manual
-
-Copy the folder into your ComfyUI custom nodes directory:
-
-```
-ComfyUI/custom_nodes/ComfyUI-GoogleTranslateSimple
-```
-
-Then restart ComfyUI. Nothing to `pip install` — only `requests`, which ComfyUI
-already bundles.
 
 ### ComfyUI Manager
 
-Search for `Google Translate Simple` in the Manager, or install it from the URL:
+Search for `Google Translate Simple`, or install from the URL:
 
 ```
 https://github.com/Verolelb/ComfyUI-GoogleTranslateSimple
 ```
 
+### Manual
+
+Clone into your ComfyUI custom nodes directory:
+
+```bash
+cd ComfyUI/custom_nodes
+git clone https://github.com/Verolelb/ComfyUI-GoogleTranslateSimple.git
+```
+
+Then restart ComfyUI. There is nothing to `pip install`: only `requests`, which
+ComfyUI already bundles.
+
 ## How it works
 
-* Uses the free Google Translate web endpoints, with automatic failover between
-  three of them in case one is unavailable or answers `429 Too Many Requests`.
-* Requests are sent as `POST` (no URL-length limit), and long texts are split
-  into chunks of 1800 characters, then reassembled — line breaks are preserved.
-* If the `GOOGLE_TRANSLATION_API_KEY` environment variable is set, the official
-  Google Cloud Translation API is used first, with a fallback to the free
-  endpoint.
-* If Google is unreachable, the node raises an explicit error instead of
-  silently returning an empty string.
+* **Provider chain.** Google rate-limits its free web endpoints and answers
+  `429 Too Many Requests` fairly easily (this is the usual cause of translation
+  failures). The node therefore tries, in order:
+  1. three independent Google endpoints (using the permissive `dict-chrome-ex`
+     client, which survives long after the classic `gtx` client gets blocked),
+  2. [MyMemory](https://mymemory.translated.net) as a non-Google fallback,
+  3. the official Google Cloud Translation API first, if
+     `GOOGLE_TRANSLATION_API_KEY` is set.
+  Only if *everything* fails does it raise an explicit error — it never silently
+  returns an empty string.
+* **Retries.** Each endpoint is retried once after a short pause. Some networks
+  get a `429` from `translate.googleapis.com` but are still served by
+  `clients5.google.com`, which is why several endpoints are used.
+* **Caching.** Translations are cached in memory, so re-running a workflow (or
+  clicking *Manual Translate* twice) does not hit the network again.
+* **Long texts** are split automatically (1800 characters per request, 450 for
+  MyMemory), then reassembled with line breaks preserved.
 
-> 💡 Some networks/ISPs get a `429` from `translate.googleapis.com`. That is why
-> the node automatically falls back to `clients5.google.com`, which usually
-> still works.
+> 💡 If translation ever fails, try setting `source_language` explicitly instead
+> of `auto`: it makes every provider usable, including the fallback ones.
 
 ## Repository layout
 
 ```
 ComfyUI-GoogleTranslateSimple/
-├── __init__.py                 # node mappings
-├── simple_google_translate.py  # translation logic + nodes
+├── __init__.py                 # node mappings + WEB_DIRECTORY
+├── simple_google_translate.py  # translation logic + nodes + server route
+├── web/
+│   └── google_translate_simple.js   # the "Manual Translate" button
 ├── pyproject.toml              # ComfyUI registry metadata
 ├── LICENSE
 └── README.md
@@ -99,8 +124,8 @@ pose, IDE, preview enrichi...). Une de ses extensions s'accroche à
 afficher ses dimensions — c'est ce qui provoquait un retard d'affichage des
 images sur les nodes Preview/Save.
 
-Ce pack-ci ne contient **aucun fichier JavaScript**, aucune route serveur, aucun
-hook. Il ne peut donc pas interférer avec l'affichage des images.
+Ce pack-ci ne contient qu'un petit fichier frontend, qui ajoute uniquement un
+bouton à ses deux nodes. Rien d'autre n'est modifié.
 
 ## Nodes fournis
 
@@ -111,6 +136,21 @@ hook. Il ne peut donc pas interférer avec l'affichage des images.
 
 `source_language` est réglé sur `auto (detect language)` par défaut : la langue
 d'entrée est détectée automatiquement. **134 langues** disponibles.
+
+## Le bouton « Manual Translate »
+
+Chaque node possède un bouton **Manual Translate** en bas :
+
+1. Tapez votre texte dans le champ `text`.
+2. Choisissez les langues.
+3. Cliquez sur **Manual Translate**.
+
+La traduction est écrite directement dans le champ `text` : vous pouvez la lire
+et la corriger avant de lancer le workflow. Une notification indique quel moteur
+a répondu.
+
+Le node continue aussi de traduire automatiquement au *Queue Prompt* ; le bouton
+sert à traduire en amont, directement dans la node.
 
 ## Installation
 
@@ -125,13 +165,25 @@ Puis redémarrer ComfyUI. Aucune dépendance à installer : le pack n'utilise qu
 
 ## Notes techniques
 
-* Traduction via les endpoints web gratuits de Google, avec bascule automatique
-  entre trois endpoints si l'un est indisponible ou renvoie une erreur 429.
-* Requêtes envoyées en `POST` (pas de limite de longueur d'URL) et textes longs
-  découpés par blocs de 1800 caractères puis recollés, en conservant les retours
-  à la ligne.
-* Si la variable d'environnement `GOOGLE_TRANSLATION_API_KEY` est définie,
-  l'API officielle Google Cloud Translation est utilisée en priorité (avec repli
-  sur l'endpoint gratuit).
-* Si Google est injoignable, une erreur explicite est levée au lieu de renvoyer
-  un texte vide en silence.
+* **Chaîne de secours.** Google limite fortement ses endpoints web gratuits et
+  renvoie facilement `429 Too Many Requests` (c'est la cause habituelle des
+  échecs de traduction). Le node essaie donc, dans l'ordre :
+  1. trois endpoints Google indépendants (via le client permissif
+     `dict-chrome-ex`, qui résiste bien plus longtemps que le client `gtx`
+     classique),
+  2. [MyMemory](https://mymemory.translated.net) comme secours non-Google,
+  3. l'API officielle Google Cloud Translation en premier, si
+     `GOOGLE_TRANSLATION_API_KEY` est définie.
+  Ce n'est que si *tout* échoue qu'une erreur explicite est levée — jamais de
+  texte vide renvoyé en silence.
+* **Nouvelles tentatives.** Chaque endpoint est retenté une fois après une courte
+  pause. Certains réseaux reçoivent un `429` de `translate.googleapis.com` tout
+  en étant servis par `clients5.google.com`, d'où l'usage de plusieurs endpoints.
+* **Cache.** Les traductions sont mises en cache en mémoire : relancer un
+  workflow (ou cliquer deux fois sur *Manual Translate*) ne refait pas d'appel
+  réseau.
+* **Textes longs** découpés automatiquement (1800 caractères par requête, 450
+  pour MyMemory) puis recollés, en conservant les retours à la ligne.
+
+> 💡 En cas d'échec, essayez de régler `source_language` explicitement au lieu de
+> `auto` : tous les fournisseurs, y compris les secours, deviennent utilisables.

@@ -1,12 +1,12 @@
 """Simple Google Translate - a minimal, standalone translation node pack.
 
-Intentionally kept tiny: one Python module, no JavaScript, no dependencies
-beyond what ComfyUI already ships.
-
 Nodes
 -----
-* Google Translate Text                  -> STRING
-* Google Translate CLIP Text Encode      -> CONDITIONING, STRING
+* Google Translate Text             -> STRING
+* Google Translate CLIP Text Encode -> CONDITIONING, STRING
+
+The pack ships one small frontend file that only adds a "Manual Translate"
+button to those two nodes. It hooks nothing else in ComfyUI.
 """
 
 from .simple_google_translate import (
@@ -24,5 +24,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SimpleGoogleTranslateCLIPTextEncodeNode": "Google Translate CLIP Text Encode",
 }
 
-# No WEB_DIRECTORY on purpose: this pack ships no frontend extension.
-__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
+# Serves web/google_translate_simple.js to the ComfyUI frontend.
+WEB_DIRECTORY = "./web"
+
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
