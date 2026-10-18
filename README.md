@@ -33,7 +33,7 @@ Typical use: write your prompt in your own language, translate it to English
 (or any other language the model understands better), then feed the result into
 a `CLIP Text Encode` node — or use the combined *CLIP Text Encode* node directly.
 
-## The "Manual Translate" button
+## The "Manual Translate" button and the preview box
 
 Each node has a **Manual Translate** button at the bottom:
 
@@ -43,6 +43,12 @@ Each node has a **Manual Translate** button at the bottom:
 
 The translation is written straight back into the `text` field, so you can read
 it and edit it before running the workflow. A toast shows which engine answered.
+
+Under the button there is a **read-only preview box** showing the translated
+text. It is filled either by the *Manual Translate* button or by the workflow
+itself: every time you press *Queue Prompt*, the node shows there what it
+actually sent to the next node. It is read-only, but you can still select and
+copy the text from it.
 
 The node still translates automatically on *Queue Prompt*; the button is there
 to translate up-front, in place.
@@ -137,7 +143,7 @@ bouton à ses deux nodes. Rien d'autre n'est modifié.
 `source_language` est réglé sur `auto (detect language)` par défaut : la langue
 d'entrée est détectée automatiquement. **134 langues** disponibles.
 
-## Le bouton « Manual Translate »
+## Le bouton « Manual Translate » et l'encart d'aperçu
 
 Chaque node possède un bouton **Manual Translate** en bas :
 
@@ -148,6 +154,12 @@ Chaque node possède un bouton **Manual Translate** en bas :
 La traduction est écrite directement dans le champ `text` : vous pouvez la lire
 et la corriger avant de lancer le workflow. Une notification indique quel moteur
 a répondu.
+
+Sous le bouton se trouve un **encart d'aperçu en lecture seule** qui affiche le
+texte traduit. Il est rempli soit par le bouton *Manual Translate*, soit par le
+workflow lui-même : à chaque *Queue Prompt*, le node y montre ce qu'il a
+réellement envoyé au node suivant. Le texte n'est pas modifiable, mais il reste
+sélectionnable et copiable.
 
 Le node continue aussi de traduire automatiquement au *Queue Prompt* ; le bouton
 sert à traduire en amont, directement dans la node.
