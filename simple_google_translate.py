@@ -611,11 +611,16 @@ class GoogleTranslateTextNode:
     DESCRIPTION = (
         "Translates the input text with Google Translate and returns the "
         "translated text. The 'Manual Translate' button translates directly "
-        "inside the text field."
+        "inside the text field, and the result is also shown in the preview "
+        "box under the node."
     )
 
     def translate(self, text, source_language, target_language):
-        return (translate_text(text, source_language, target_language),)
+        translated = translate_text(text, source_language, target_language)
+        return {
+            "ui": {"translated_text": (translated,)},
+            "result": (translated,),
+        }
 
 
 class GoogleTranslateCLIPTextEncodeNode:
@@ -635,12 +640,16 @@ class GoogleTranslateCLIPTextEncodeNode:
     FUNCTION = "translate_and_encode"
     CATEGORY = "Translate/Google"
     DESCRIPTION = (
-        "Translates the prompt with Google Translate and encodes the "
-        "translated text with CLIP."
+        "Translates the prompt with Google Translate, encodes the translated "
+        "text with CLIP, and shows the translation in the preview box under "
+        "the node."
     )
 
     def translate_and_encode(self, text, source_language, target_language, clip):
         translated = translate_text(text, source_language, target_language)
         tokens = clip.tokenize(translated)
         conditioning, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
-        return ([[conditioning, {"pooled_output": pooled}]], translated)
+        return {
+            "ui": {"translated_text": (translated,)},
+            "result": ([[conditioning, {"pooled_output": pooled}]], translated),
+        }
