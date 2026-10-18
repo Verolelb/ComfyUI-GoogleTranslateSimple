@@ -608,6 +608,9 @@ class GoogleTranslateTextNode:
     RETURN_NAMES = ("text",)
     FUNCTION = "translate"
     CATEGORY = "Translate/Google"
+    # Always executed, even when nothing consumes its output, so that the
+    # translation preview is refreshed on every Queue Prompt.
+    OUTPUT_NODE = True
     DESCRIPTION = (
         "Translates the input text with Google Translate and returns the "
         "translated text. The 'Manual Translate' button translates directly "
@@ -639,6 +642,9 @@ class GoogleTranslateCLIPTextEncodeNode:
     RETURN_NAMES = ("conditioning", "text")
     FUNCTION = "translate_and_encode"
     CATEGORY = "Translate/Google"
+    # Always executed so that the translation preview is refreshed on every
+    # Queue Prompt.
+    OUTPUT_NODE = True
     DESCRIPTION = (
         "Translates the prompt with Google Translate, encodes the translated "
         "text with CLIP, and shows the translation in the preview box under "
