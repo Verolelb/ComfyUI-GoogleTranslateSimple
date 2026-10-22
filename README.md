@@ -41,8 +41,9 @@ Each node has a **Manual Translate** button at the bottom:
 2. Pick the languages.
 3. Click **Manual Translate**.
 
-The translation is written straight back into the `text` field, so you can read
-it and edit it before running the workflow. A toast shows which engine answered.
+The translation is shown in the preview box below the node; **the `text` field
+keeps your original text**, so you can keep it, edit it or translate again. A
+toast shows which engine answered.
 
 Under the button there is a **read-only preview box** showing the translated
 text. It is filled either by the *Manual Translate* button or by the workflow
@@ -51,7 +52,7 @@ actually sent to the next node. It is read-only, but you can still select and
 copy the text from it.
 
 The node still translates automatically on *Queue Prompt*; the button is there
-to translate up-front, in place.
+to preview the translation up-front, without losing the source text.
 
 ## Installation
 
@@ -151,9 +152,9 @@ Chaque node possède un bouton **Manual Translate** en bas :
 2. Choisissez les langues.
 3. Cliquez sur **Manual Translate**.
 
-La traduction est écrite directement dans le champ `text` : vous pouvez la lire
-et la corriger avant de lancer le workflow. Une notification indique quel moteur
-a répondu.
+La traduction s'affiche dans l'encart d'aperçu sous le node ; **le champ `text`
+conserve votre texte d'origine**, que vous pouvez donc garder, modifier ou
+retraduire. Une notification indique quel moteur a répondu.
 
 Sous le bouton se trouve un **encart d'aperçu en lecture seule** qui affiche le
 texte traduit. Il est rempli soit par le bouton *Manual Translate*, soit par le
@@ -162,7 +163,7 @@ réellement envoyé au node suivant. Le texte n'est pas modifiable, mais il rest
 sélectionnable et copiable.
 
 Le node continue aussi de traduire automatiquement au *Queue Prompt* ; le bouton
-sert à traduire en amont, directement dans la node.
+sert à prévisualiser la traduction en amont, sans perdre le texte source.
 
 ## Installation
 

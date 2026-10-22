@@ -2,10 +2,11 @@
  * Simple Google Translate - frontend extension.
  *
  * Adds to each node:
- *   * a "Manual Translate" button, which translates in place, right inside the
- *     text field,
+ *   * a "Manual Translate" button, which translates the text field without
+ *     modifying it,
  *   * a read-only "translation preview" box under the node, filled either by
- *     the button or by the workflow execution.
+ *     the button or by the workflow execution. The original text is always
+ *     kept in the text field.
  *
  * Deliberately small: it only touches the two node types of this pack and
  * overrides nothing globally (no hook on image preview/save nodes), so it
@@ -181,7 +182,8 @@ async function manualTranslate() {
     }
 
     const translated = data.translated_text ?? "";
-    writeWidget(node, textWidget, translated);
+    // Keep the user's original text untouched in the "text" field: the
+    // translation is only shown in the read-only preview box below.
     setPreview(node, translated);
 
     const preview = String(translated).replace(/\s+/g, " ").slice(0, 90);

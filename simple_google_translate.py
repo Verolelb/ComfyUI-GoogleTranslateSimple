@@ -613,9 +613,9 @@ class GoogleTranslateTextNode:
     OUTPUT_NODE = True
     DESCRIPTION = (
         "Translates the input text with Google Translate and returns the "
-        "translated text. The 'Manual Translate' button translates directly "
-        "inside the text field, and the result is also shown in the preview "
-        "box under the node."
+        "translated text. The 'Manual Translate' button shows the translation "
+        "in the preview box under the node while keeping the original text in "
+        "the text field."
     )
 
     def translate(self, text, source_language, target_language):
