@@ -54,6 +54,29 @@ copy the text from it.
 The node still translates automatically on *Queue Prompt*; the button is there
 to preview the translation up-front, without losing the source text.
 
+## Prompt library
+
+Under the node there is a small prompt manager, shared by both nodes of the
+pack:
+
+| Control | What it does |
+|---|---|
+| `save as` | Optional name for the save. Leave it empty to let the first line of the text be used as the name. |
+| `saved prompts` | Every saved prompt, newest first. |
+| **Save Prompt** | Saves the current text. Reusing an existing name updates that save instead of creating a duplicate (the toast says *Prompt updated*). |
+| **Load Prompt** | Writes the selected save back into the `text` field. The translation preview is cleared, since it belonged to the previous text. |
+| **Delete Prompt** | Deletes the selected save, after a confirmation. |
+| **Delete All Prompts** | Deletes the whole library, after a confirmation. |
+
+Saves are stored server-side in
+`<ComfyUI>/user/google_translate_simple/prompts.json`, so they survive browser
+cache clears, ComfyUI restarts and workflow reloads. Each save also remembers the
+source and target languages used when it was created (they are not restored on
+load, only the text is).
+
+> 💡 Saving with an empty name never overwrites a previous save: a suffix
+> ` (2)`, ` (3)`... is added automatically when the name already exists.
+
 ## Installation
 
 ### ComfyUI Manager
@@ -105,8 +128,9 @@ ComfyUI already bundles.
 ComfyUI-GoogleTranslateSimple/
 ├── __init__.py                 # node mappings + WEB_DIRECTORY
 ├── simple_google_translate.py  # translation logic + nodes + server route
+├── prompt_store.py             # saved prompt library + its routes
 ├── web/
-│   └── google_translate_simple.js   # the "Manual Translate" button
+│   └── google_translate_simple.js   # button, preview and prompt library
 ├── pyproject.toml              # ComfyUI registry metadata
 ├── LICENSE
 └── README.md
@@ -164,6 +188,29 @@ sélectionnable et copiable.
 
 Le node continue aussi de traduire automatiquement au *Queue Prompt* ; le bouton
 sert à prévisualiser la traduction en amont, sans perdre le texte source.
+
+## Bibliothèque de prompts
+
+Sous le node se trouve un petit gestionnaire de prompts, partagé par les deux
+nodes du pack :
+
+| Contrôle | Rôle |
+|---|---|
+| `save as` | Nom facultatif de la sauvegarde. Laissez vide pour utiliser la première ligne du texte comme nom. |
+| `saved prompts` | Toutes les sauvegardes, les plus récentes en premier. |
+| **Save Prompt** | Sauvegarde le texte courant. Réutiliser un nom existant met à jour cette sauvegarde au lieu de créer un doublon (la notification indique *Prompt updated*). |
+| **Load Prompt** | Réécrit la sauvegarde sélectionnée dans le champ `text`. L'aperçu de traduction est vidé, car il correspondait au texte précédent. |
+| **Delete Prompt** | Supprime la sauvegarde sélectionnée, après confirmation. |
+| **Delete All Prompts** | Supprime toute la bibliothèque, après confirmation. |
+
+Les sauvegardes sont stockées côté serveur dans
+`<ComfyUI>/user/google_translate_simple/prompts.json` : elles survivent donc au
+vidage du cache du navigateur, aux redémarrages de ComfyUI et au rechargement des
+workflows. Chaque sauvegarde retient aussi les langues source et cible utilisées
+lors de sa création (seul le texte est restauré au chargement).
+
+> 💡 Sauvegarder sans nom n'écrase jamais une sauvegarde existante : un suffixe
+> ` (2)`, ` (3)`… est ajouté automatiquement si le nom est déjà pris.
 
 ## Installation
 

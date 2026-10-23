@@ -27,6 +27,8 @@ import time
 
 import requests
 
+from .prompt_store import register_routes as _register_prompt_routes
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -578,6 +580,9 @@ def _register_manual_translate_route() -> bool:
 
 MANUAL_TRANSLATE_ROUTE = _register_manual_translate_route()
 
+# The saved prompt library needs its own routes (list / save / delete).
+PROMPT_ROUTES = _register_prompt_routes()
+
 
 # ---------------------------------------------------------------------------
 # Nodes
@@ -615,7 +620,8 @@ class GoogleTranslateTextNode:
         "Translates the input text with Google Translate and returns the "
         "translated text. The 'Manual Translate' button shows the translation "
         "in the preview box under the node while keeping the original text in "
-        "the text field."
+        "the text field. Prompts can also be saved, restored and deleted from "
+        "the prompt library at the bottom of the node."
     )
 
     def translate(self, text, source_language, target_language):
@@ -648,7 +654,8 @@ class GoogleTranslateCLIPTextEncodeNode:
     DESCRIPTION = (
         "Translates the prompt with Google Translate, encodes the translated "
         "text with CLIP, and shows the translation in the preview box under "
-        "the node."
+        "the node. Prompts can also be saved, restored and deleted from the "
+        "prompt library at the bottom of the node."
     )
 
     def translate_and_encode(self, text, source_language, target_language, clip):

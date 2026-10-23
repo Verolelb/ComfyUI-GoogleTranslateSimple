@@ -6,8 +6,8 @@ Nodes
 * Google Translate CLIP Text Encode -> CONDITIONING, STRING
 
 The pack ships one small frontend file that only adds a "Manual Translate"
-button and a read-only translation preview box to those two nodes. It hooks
-nothing else in ComfyUI.
+button, a read-only translation preview box and a saved prompt library to those
+two nodes. It hooks nothing else in ComfyUI.
 """
 
 from .simple_google_translate import (
