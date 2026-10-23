@@ -5,7 +5,7 @@
  *   * a "Manual Translate" button, which translates the text field without
  *     modifying it,
  *   * a read-only "translation preview" box under the node, filled either by
- *     the button or by the workflow execution,
+ *     the button or by the workflow execution, plus a "Copy Result" button,
  *   * a small prompt library: save the current text under a name, load it back
  *     later, and delete saves one by one or all at once. The original text is
  *     always kept in the text field.
@@ -150,6 +150,60 @@ function setPreview(node, text) {
   const widget = widgetByName(node, PREVIEW_NAME);
   if (!widget) return;
   writeWidget(node, widget, String(text ?? ""));
+}
+
+// ---------------------------------------------------------------------------
+// Copy result
+// ---------------------------------------------------------------------------
+
+/** Copy text to the clipboard, with a fallback for non-secure contexts. */
+async function copyTextToClipboard(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (error) {
+    // Clipboard API refused (permissions, HTTP context, ...): use the fallback.
+  }
+
+  try {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.top = "0";
+    area.style.left = "-9999px";
+    document.body.appendChild(area);
+    area.select();
+    const copied = document.execCommand?.("copy");
+    document.body.removeChild(area);
+    return Boolean(copied);
+  } catch (error) {
+    return false;
+  }
+}
+
+async function copyResult() {
+  const node = this;
+  const widget = widgetByName(node, PREVIEW_NAME);
+  const text = String(widget?.value ?? "");
+
+  if (!text.trim()) {
+    notify(
+      "warn",
+      "Copy result",
+      "Nothing to copy yet. Use Manual Translate or run the workflow first."
+    );
+    return;
+  }
+
+  const copied = await copyTextToClipboard(text);
+  if (copied) {
+    notify("success", "Copied to clipboard", text.replace(/\s+/g, " ").slice(0, 90));
+  } else {
+    notify("error", "Copy failed", "The clipboard is not available in this browser.");
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -564,6 +618,7 @@ app.registerExtension({
       button.serializeValue = () => undefined;
 
       createPreviewWidget(this);
+      addWidgetButton(this, "Copy Result", copyResult);
       createPromptManager(this);
       fitNode(this);
 

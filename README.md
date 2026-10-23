@@ -51,6 +51,10 @@ itself: every time you press *Queue Prompt*, the node shows there what it
 actually sent to the next node. It is read-only, but you can still select and
 copy the text from it.
 
+A **Copy Result** button sits right under the preview and copies the whole
+translation to the clipboard in one click (with a fallback for browsers where
+the Clipboard API is not available).
+
 The node still translates automatically on *Queue Prompt*; the button is there
 to preview the translation up-front, without losing the source text.
 
@@ -185,6 +189,10 @@ texte traduit. Il est rempli soit par le bouton *Manual Translate*, soit par le
 workflow lui-même : à chaque *Queue Prompt*, le node y montre ce qu'il a
 réellement envoyé au node suivant. Le texte n'est pas modifiable, mais il reste
 sélectionnable et copiable.
+
+Un bouton **Copy Result** se trouve juste sous l'aperçu et copie toute la
+traduction dans le presse-papiers en un clic (avec une solution de repli si
+l'API Clipboard n'est pas disponible dans le navigateur).
 
 Le node continue aussi de traduire automatiquement au *Queue Prompt* ; le bouton
 sert à prévisualiser la traduction en amont, sans perdre le texte source.
