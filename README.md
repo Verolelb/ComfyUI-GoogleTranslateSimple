@@ -58,6 +58,12 @@ the Clipboard API is not available).
 The node still translates automatically on *Queue Prompt*; the button is there
 to preview the translation up-front, without losing the source text.
 
+All the extra controls of the node (translation preview, prompt library and
+their buttons) are **UI only**: they are saved inside the workflow but never
+sent as node inputs. ComfyUI's execution cache therefore stays valid - pressing
+*Queue Prompt* twice without changing anything reuses the previous result
+instead of translating again and re-running the whole workflow.
+
 ## Prompt library
 
 Under the node there is a small prompt manager, shared by both nodes of the
@@ -196,6 +202,13 @@ l'API Clipboard n'est pas disponible dans le navigateur).
 
 Le node continue aussi de traduire automatiquement au *Queue Prompt* ; le bouton
 sert à prévisualiser la traduction en amont, sans perdre le texte source.
+
+Tous les contrôles ajoutés par le node (aperçu de traduction, bibliothèque de
+prompts et leurs boutons) sont **purement visuels** : ils sont enregistrés dans
+le workflow mais jamais envoyés comme entrées du node. Le cache d'exécution de
+ComfyUI reste donc valide : appuyer deux fois sur *Queue Prompt* sans rien
+modifier réutilise le résultat précédent au lieu de retraduire et de relancer
+tout le workflow.
 
 ## Bibliothèque de prompts
 

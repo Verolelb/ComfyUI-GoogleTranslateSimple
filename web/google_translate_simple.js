@@ -92,9 +92,27 @@ function fitNode(node) {
   }
 }
 
+/**
+ * Mark a widget as "UI only": its value is still saved inside the workflow, but
+ * it is never sent in the API prompt. Without this, ComfyUI treats the widget as
+ * a real node input and includes it in the execution cache key: the translation
+ * preview changes after every run, the cache key changes with it, and the whole
+ * workflow is re-executed instead of reusing the previous result (which looks
+ * like "the seed is not fixed anymore").
+ */
+function markUiOnly(widget) {
+  if (!widget) return widget;
+  widget.options = widget.options ?? {};
+  widget.options.serialize = false;
+  return widget;
+}
+
 function addWidgetButton(node, label, handler) {
   const button = node.addWidget("button", label, null, handler.bind(node));
-  if (button) button.serializeValue = () => undefined;
+  if (button) {
+    button.serializeValue = () => undefined;
+    markUiOnly(button);
+  }
   return button;
 }
 
@@ -143,6 +161,7 @@ function createPreviewWidget(node) {
 
   if (widget) {
     widget.label = "translation";
+    markUiOnly(widget);
   }
 }
 
@@ -349,6 +368,7 @@ function createSaveNameWidget(node) {
     element.spellcheck = false;
   }
   if (widget) widget.label = "save as";
+  markUiOnly(widget);
 }
 
 function createSavedPromptWidget(node) {
@@ -364,6 +384,7 @@ function createSavedPromptWidget(node) {
   if (combo) {
     combo.label = "saved prompts";
     combo.serializeValue = () => undefined;
+    markUiOnly(combo);
   }
 }
 
@@ -609,13 +630,7 @@ app.registerExtension({
 
       // Appended after the existing widgets on purpose: this keeps the input
       // widget indexes stable, so saved workflows keep their values.
-      const button = this.addWidget(
-        "button",
-        BUTTON_LABEL,
-        null,
-        manualTranslate.bind(this)
-      );
-      button.serializeValue = () => undefined;
+      addWidgetButton(this, BUTTON_LABEL, manualTranslate);
 
       createPreviewWidget(this);
       addWidgetButton(this, "Copy Result", copyResult);
